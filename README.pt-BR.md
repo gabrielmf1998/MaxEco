@@ -68,7 +68,7 @@ A bandeja é escrita em C **sem nenhuma biblioteca C**, com chamadas de sistema 
 
 | | |
 |---|---|
-| Memória (RSS, PSS e privada são iguais) | 60 KB |
+| Memória (RSS, PSS e privada são iguais) | 60 a 64 KB |
 | CPU parado | 0 (dorme em `ppoll()` e só acorda quando a bandeja do sistema fala com ele) |
 | Vezes que acorda parado | 0 (medido no ícone rodando, por 3 minutos, 0 trocas de contexto e 0 ns de CPU) |
 

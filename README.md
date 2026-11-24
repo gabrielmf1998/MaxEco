@@ -68,7 +68,7 @@ The tray program is written in C **without any C library**: its own system calls
 
 | | |
 |---|---|
-| Memory (RSS, PSS and private are all equal) | 60 KB |
+| Memory (RSS, PSS and private are all equal) | 60 to 64 KB |
 | CPU while idle | 0 (it sleeps in `ppoll()` and only wakes up when the tray host talks to it) |
 | Wakeups while idle | 0 (measured on the running tray over 3 minutes: 0 context switches, 0 ns of CPU) |
 

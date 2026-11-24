@@ -50,9 +50,9 @@ install: all
 	done
 	install -Dm644 data/50-maxeco.rules $(DESTDIR)$(DATADIR)/polkit-1/rules.d/50-maxeco.rules
 	install -Dm644 data/maxeco.desktop $(DESTDIR)$(DATADIR)/applications/maxeco.desktop
-	install -Dm644 data/icons/maxeco-on.svg $(DESTDIR)$(DATADIR)/icons/hicolor/scalable/apps/maxeco-on.svg
-	install -Dm644 data/icons/maxeco-eco.svg $(DESTDIR)$(DATADIR)/icons/hicolor/scalable/apps/maxeco-eco.svg
-	install -Dm644 data/icons/maxeco-off.svg $(DESTDIR)$(DATADIR)/icons/hicolor/scalable/apps/maxeco-off.svg
+	for i in maxeco maxeco-tray-normal maxeco-tray-eco maxeco-tray-max; do \
+	  install -Dm644 data/icons/$$i.svg $(DESTDIR)$(DATADIR)/icons/hicolor/scalable/apps/$$i.svg; \
+	done
 	install -Dm644 LICENSE $(DESTDIR)$(DATADIR)/licenses/maxeco/LICENSE
 
 clean:

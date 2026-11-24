@@ -4,6 +4,12 @@
 
 [Português (BR)](README.pt-BR.md)
 
+Install in one line, on Arch, Debian, Ubuntu, Fedora, openSUSE and their derivatives:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/gabrielmf1998/MaxEco/main/install.sh | bash
+```
+
 The tray menu:
 
 | Entry | What it does |
@@ -13,7 +19,9 @@ The tray menu:
 | **Start With System** | Starts the tray icon at login. The level that was on when you logged out or shut down is applied again |
 | **Quit** | Always goes back to Normal first, then closes the program |
 
-The icon shows the level: a grey leaf for Normal, a green outline for Eco and a filled green leaf for MaxEco.
+The icon lights up with the level: switched off (a grey outline) in Normal, lit up to the middle in Eco, fully lit with a glow in MaxEco. It never blinks or animates.
+
+![The tray icon in Normal, Eco and MaxEco, on a dark and a light panel](docs/tray-icons.png)
 
 ## What each level changes
 
@@ -60,8 +68,11 @@ The tray program is written in C **without any C library**: its own system calls
 
 | | |
 |---|---|
-| Memory (RSS, PSS and private are all equal) | 64 KB |
+| Memory (RSS, PSS and private are all equal) | 60 KB |
 | CPU while idle | 0 (it sleeps in `ppoll()` and only wakes up when the tray host talks to it) |
+| Wakeups while idle | 0 (measured on the running tray over 3 minutes: 0 context switches, 0 ns of CPU) |
+
+The icon costs the panel nothing either. It is always reported as *Active* (Plasma only pulses tray icons that ask for attention), it is a plain SVG with no animation, and the panel is told to redraw it only when the level really changes.
 
 The root part (`maxeco-helper`) only runs for a fraction of a second when the level changes (about 0.2 s on the PC above).
 
@@ -90,11 +101,11 @@ Or download the package yourself from [Releases](https://github.com/gabrielmf199
 
 | Distro | File | Install | Remove |
 |---|---|---|---|
-| Arch, CachyOS, Manjaro, EndeavourOS | `maxeco-1.2.0-1-x86_64.pkg.tar.zst` | `sudo pacman -U ./maxeco-1.2.0-1-x86_64.pkg.tar.zst` | `sudo pacman -R maxeco` |
-| Debian, Ubuntu, Mint, Pop!_OS | `maxeco_1.2.0-1_amd64.deb` | `sudo apt install ./maxeco_1.2.0-1_amd64.deb` | `sudo apt remove maxeco` |
-| Fedora, Nobara | `maxeco-1.2.0-1.x86_64.rpm` | `sudo dnf install ./maxeco-1.2.0-1.x86_64.rpm` | `sudo dnf remove maxeco` |
-| openSUSE | `maxeco-1.2.0-1.x86_64.rpm` | `sudo zypper install --allow-unsigned-rpm ./maxeco-1.2.0-1.x86_64.rpm` | `sudo zypper remove maxeco` |
-| Bazzite, Silverblue, Kinoite | `maxeco-1.2.0-1.x86_64.rpm` | `rpm-ostree install ./maxeco-1.2.0-1.x86_64.rpm`, then reboot | `rpm-ostree uninstall maxeco` |
+| Arch, CachyOS, Manjaro, EndeavourOS | `maxeco-1.2.1-1-x86_64.pkg.tar.zst` | `sudo pacman -U ./maxeco-1.2.1-1-x86_64.pkg.tar.zst` | `sudo pacman -R maxeco` |
+| Debian, Ubuntu, Mint, Pop!_OS | `maxeco_1.2.1-1_amd64.deb` | `sudo apt install ./maxeco_1.2.1-1_amd64.deb` | `sudo apt remove maxeco` |
+| Fedora, Nobara | `maxeco-1.2.1-1.x86_64.rpm` | `sudo dnf install ./maxeco-1.2.1-1.x86_64.rpm` | `sudo dnf remove maxeco` |
+| openSUSE | `maxeco-1.2.1-1.x86_64.rpm` | `sudo zypper install --allow-unsigned-rpm ./maxeco-1.2.1-1.x86_64.rpm` | `sudo zypper remove maxeco` |
+| Bazzite, Silverblue, Kinoite | `maxeco-1.2.1-1.x86_64.rpm` | `rpm-ostree install ./maxeco-1.2.1-1.x86_64.rpm`, then reboot | `rpm-ostree uninstall maxeco` |
 
 `SHA256SUMS` in the same release has the checksum of every file. Removing the package goes back to Normal first.
 

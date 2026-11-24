@@ -1,7 +1,7 @@
 # Maintainer: gabrielmf1998
 # Local build from this repository:  cd packaging && makepkg -f
 pkgname=maxeco
-pkgver=1.2.0
+pkgver=1.2.1
 pkgrel=1
 pkgdesc="Tray slider with three power levels (Normal, Eco, MaxEco) for the CPU, GPUs and fans"
 arch=('x86_64')

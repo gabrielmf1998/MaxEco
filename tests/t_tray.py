@@ -198,7 +198,7 @@ def states():
 
 
 NORMAL, ECO, MAX, HZ, AUTO, QUIT = 1, 2, 3, 5, 6, 8
-ICON = {NORMAL: "maxeco-off", ECO: "maxeco-eco", MAX: "maxeco-on"}
+ICON = {NORMAL: "maxeco-tray-normal", ECO: "maxeco-tray-eco", MAX: "maxeco-tray-max"}
 
 
 def syslog():
@@ -231,7 +231,7 @@ check("item name", name, f"org.kde.StatusNotifierItem-{proc.pid}-1")
 
 props = call("/StatusNotifierItem", "org.freedesktop.DBus.Properties", "GetAll", "(s)",
              ("org.kde.StatusNotifierItem",))[0]
-check("IconName Normal", props["IconName"], "maxeco-off")
+check("IconName Normal", props["IconName"], "maxeco-tray-normal")
 check("Menu path", props["Menu"], "/MenuBar")
 check("ItemIsMenu", props["ItemIsMenu"], True)
 check("Category", props["Category"], "Hardware")
@@ -267,7 +267,7 @@ scroll(120)  # wheel up at Normal: already the top
 scroll(-120, "horizontal")  # sideways is ignored
 call("/", "org.freedesktop.DBus.Peer", "Ping")
 time.sleep(0.3)
-check("Activate, Scroll up at Normal and sideways do nothing", (syslog(), prop("IconName")), ([], "maxeco-off"))
+check("Activate, Scroll up at Normal and sideways do nothing", (syslog(), prop("IconName")), ([], "maxeco-tray-normal"))
 
 # ----------------------------------------------------- errors and abuse
 for args, err in [(("/MenuBar", "com.canonical.dbusmenu", "Nope"), "UnknownMethod"),
@@ -311,6 +311,8 @@ check("radio on Eco", states()["Eco"], 1)
 check("ToolTip Eco", prop("ToolTip")[3].split("\n")[0],
       "Eco. CPU and GPU use less power and games still run, quiet fans.")
 check("signals sent", {"LayoutUpdated", "NewIcon", "NewToolTip"} <= set(signals), True)
+spin(lambda: signals.count("NewToolTip") >= 2)
+check("one switch redraws the icon once (tooltip twice)", (signals.count("NewIcon"), signals.count("NewToolTip")), (1, 2))
 check("saved level eco", saved(), "eco\n")
 check("power-profiles-daemon is left alone", holds, [])
 click(ECO)
@@ -415,7 +417,7 @@ k = len(klog())
 click(MAX)
 check("failed switch shows a notification", spin(lambda: notifications), True)
 check("notification text", notifications[-1][0], "MaxEco could not switch to MaxEco")
-check("icon and radio back on Normal", spin(lambda: prop("IconName") == "maxeco-off") and states()["Normal"], 1)
+check("icon and radio back on Normal", spin(lambda: prop("IconName") == "maxeco-tray-normal") and states()["Normal"], 1)
 check("failed switch leaves the screens alone", (len(klog()), screens()), (k, ORIGINAL))
 check("saved level stays normal", saved(), "normal\n")
 proc.send_signal(signal.SIGTERM)
@@ -497,10 +499,10 @@ check("and with the 60 Hz option the screens go to 60 Hz again", spin(lambda: sc
 # level changed behind the tray's back
 open(LEVEL, "w").write("eco\n")
 call("/MenuBar", "com.canonical.dbusmenu", "AboutToShow", "(i)", (0,))
-check("outside change to Eco picked up when the menu opens", (prop("IconName"), states()["Eco"]), ("maxeco-eco", 1))
+check("outside change to Eco picked up when the menu opens", (prop("IconName"), states()["Eco"]), ("maxeco-tray-eco", 1))
 os.remove(STATE)
 call("/MenuBar", "com.canonical.dbusmenu", "AboutToShow", "(i)", (0,))
-check("outside stop picked up", (prop("IconName"), states()["Normal"]), ("maxeco-off", 1))
+check("outside stop picked up", (prop("IconName"), states()["Normal"]), ("maxeco-tray-normal", 1))
 check("saved screen modes kept for later", open(DISPLAY_FILE).read(),
       "HDMI-A-2 1920 1080 10000\nDP-4 1920 1080 24000\n")
 

@@ -16,7 +16,7 @@
 #include "rt.h"
 #include "dbus.h"
 
-#define MAXECO_VERSION "1.2.0"
+#define MAXECO_VERSION "1.2.1"
 #define SNI_PATH "/StatusNotifierItem"
 #define MENU_PATH "/MenuBar"
 #define STATE_FILE_DEFAULT "/run/maxeco/state"
@@ -159,7 +159,7 @@ static void set_autostart(int on)
         sb_add(&s, "[Desktop Entry]\nType=Application\nName=MaxEco\n"
                    "Comment=Power level switch in the system tray\nExec=");
         sb_add(&s, quote ? "\"" : ""), sb_add(&s, self_exe), sb_add(&s, quote ? "\"" : "");
-        sb_add(&s, "\nIcon=maxeco-on\nTerminal=false\nX-GNOME-Autostart-enabled=true\n");
+        sb_add(&s, "\nIcon=maxeco\nTerminal=false\nX-GNOME-Autostart-enabled=true\n");
         mkdir_p(p_cfg_auto);
         if (s.ok) write_file(p_auto, text);
     } else {
@@ -484,7 +484,7 @@ static void screens_for_level(void)
 /* the icon and the menu show the level asked for, so the wheel feels instant */
 static const char *icon_name(void)
 {
-    return want == LV_MAX ? "maxeco-on" : want == LV_ECO ? "maxeco-eco" : "maxeco-off";
+    return want == LV_MAX ? "maxeco-tray-max" : want == LV_ECO ? "maxeco-tray-eco" : "maxeco-tray-normal";
 }
 
 static const char *tooltip_text(void)
@@ -511,7 +511,13 @@ static void refresh_ui(void)
     dw_u32(&w, ++menu_rev);
     dw_u32(&w, 0);
     emit(MENU_PATH, "com.canonical.dbusmenu", "LayoutUpdated", "ui", &w);
-    emit(SNI_PATH, "org.kde.StatusNotifierItem", "NewIcon", "", 0);
+    /* NewIcon makes the panel load and draw the icon again, so only when it really changed */
+    static const char *shown_icon;
+    const char *icon = icon_name();
+    if (icon != shown_icon) {
+        shown_icon = icon;
+        emit(SNI_PATH, "org.kde.StatusNotifierItem", "NewIcon", "", 0);
+    }
     emit(SNI_PATH, "org.kde.StatusNotifierItem", "NewToolTip", "", 0);
 }
 
@@ -521,7 +527,7 @@ static void notify(const char *summary, const char *text)
     dw_init(&w, sig_buf, sizeof sig_buf);
     dw_str(&w, "MaxEco");
     dw_u32(&w, 0);
-    dw_str(&w, "maxeco-off");
+    dw_str(&w, "maxeco");
     dw_str(&w, summary);
     dw_str(&w, text);
     unsigned a = dw_abegin(&w, 4);

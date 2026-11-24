@@ -3,7 +3,7 @@
 %global debug_package %{nil}
 
 Name:           maxeco
-Version:        1.2.0
+Version:        1.2.1
 Release:        1
 Summary:        Tray slider with three power levels (Normal, Eco, MaxEco) for the CPU, GPUs and fans
 License:        MIT
@@ -69,11 +69,16 @@ systemctl daemon-reload >/dev/null 2>&1 || :
 /usr/lib/systemd/system/suspend-then-hibernate.target.wants/maxeco-resume.service
 /usr/share/polkit-1/rules.d/50-maxeco.rules
 /usr/share/applications/maxeco.desktop
-/usr/share/icons/hicolor/scalable/apps/maxeco-on.svg
-/usr/share/icons/hicolor/scalable/apps/maxeco-eco.svg
-/usr/share/icons/hicolor/scalable/apps/maxeco-off.svg
+/usr/share/icons/hicolor/scalable/apps/maxeco.svg
+/usr/share/icons/hicolor/scalable/apps/maxeco-tray-normal.svg
+/usr/share/icons/hicolor/scalable/apps/maxeco-tray-eco.svg
+/usr/share/icons/hicolor/scalable/apps/maxeco-tray-max.svg
 
 %changelog
+* Tue Nov 24 2026 gabrielmf1998 <110578985+gabrielmf1998@users.noreply.github.com> - 1.2.1-1
+- new tray icons that light up per level (grey outline, half lit, fully lit with a glow)
+- the panel is told to redraw the icon only when the level really changed
+
 * Mon Nov 23 2026 gabrielmf1998 <110578985+gabrielmf1998@users.noreply.github.com> - 1.2.0-1
 - Normal, Eco and MaxEco levels instead of on and off, mouse wheel on the icon
 - 60 Hz screens are now an option, off by default

@@ -1,0 +1,27 @@
+# Maintainer: gabrielmf1998
+# Local build from this repository:  cd packaging && makepkg -f
+pkgname=maxeco
+pkgver=1.2.0
+pkgrel=1
+pkgdesc="Tray slider with three power levels (Normal, Eco, MaxEco) for the CPU, GPUs and fans"
+arch=('x86_64')
+license=('MIT')
+depends=('glibc' 'systemd' 'polkit')
+makedepends=('gcc' 'make')
+optdepends=('nvidia-utils: limits for NVIDIA graphics cards'
+            'libkscreen: optional 60 Hz screens in MaxEco on KDE Plasma (kscreen-doctor)')
+options=('!debug')
+install=maxeco.install
+
+build() {
+  make -C "$startdir/.." clean
+  make -C "$startdir/.."
+}
+
+check() {
+  "$startdir/../tests/t_helper.sh" "$startdir/../build/maxeco-helper" > /dev/null
+}
+
+package() {
+  make -C "$startdir/.." DESTDIR="$pkgdir" PREFIX=/usr install
+}

@@ -1,0 +1,13 @@
+[Unit]
+Description=MaxEco level again after resume
+After=suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
+ConditionPathExists=/run/maxeco/state
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/maxeco/maxeco-helper resume
+NoNewPrivileges=yes
+ProtectHome=yes
+ProtectSystem=full
+PrivateTmp=yes
+PrivateNetwork=yes

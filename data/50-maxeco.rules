@@ -1,0 +1,14 @@
+// MaxEco: the user sitting at the machine may switch the levels without
+// typing a password, and nothing else: start maxeco-level@eco.service or
+// maxeco-level@max.service, start and stop maxeco.service (Normal).
+polkit.addRule(function (action, subject) {
+    if (action.id != "org.freedesktop.systemd1.manage-units" || !subject.local || !subject.active) {
+        return polkit.Result.NOT_HANDLED;
+    }
+    var unit = action.lookup("unit"), verb = action.lookup("verb");
+    if ((unit == "maxeco.service" && (verb == "start" || verb == "stop")) ||
+        ((unit == "maxeco-level@eco.service" || unit == "maxeco-level@max.service") && verb == "start")) {
+        return polkit.Result.YES;
+    }
+    return polkit.Result.NOT_HANDLED;
+});

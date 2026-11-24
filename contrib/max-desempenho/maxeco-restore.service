@@ -1,0 +1,13 @@
+# For machines where max-desempenho.service tunes the GPU at boot (overclock,
+# locked clocks, power limit, fans) and PC Panel sets the fans: when eco mode
+# turns off, run both again, the same way the machine is set up at boot.
+# Install to /etc/systemd/system/ together with the two drop-ins.
+[Unit]
+Description=MaxEco: apply max-desempenho and the PC Panel fans again after eco mode
+After=maxeco.service
+
+[Service]
+Type=oneshot
+ExecStart=-/usr/bin/systemctl start max-desempenho.service
+ExecStart=-/usr/bin/systemctl start pc-panel-fans.path
+ExecStart=-/usr/bin/systemctl start pc-panel-fans.service

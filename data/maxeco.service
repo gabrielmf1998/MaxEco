@@ -1,0 +1,14 @@
+[Unit]
+Description=MaxEco (saves the settings; stopping it puts them back)
+After=nvidia-persistenced.service systemd-modules-load.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/lib/maxeco/maxeco-helper save
+ExecStop=/usr/lib/maxeco/maxeco-helper off
+NoNewPrivileges=yes
+ProtectHome=yes
+ProtectSystem=full
+PrivateTmp=yes
+PrivateNetwork=yes

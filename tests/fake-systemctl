@@ -1,0 +1,13 @@
+#!/bin/sh
+# Stands in for systemctl in tests/t_tray.py: "start maxeco-level@X.service"
+# writes the state and level files the real helper would write, "stop
+# maxeco.service" removes them. FAKE_RC makes it fail.
+echo "$1 $2" >> "$FAKE_LOG"
+[ "${FAKE_RC:-0}" = 0 ] || exit "$FAKE_RC"
+case "$1 $2" in
+"start maxeco-level@eco.service") : > "$MAXECO_STATE"; echo eco > "$MAXECO_LEVEL" ;;
+"start maxeco-level@max.service") : > "$MAXECO_STATE"; echo max > "$MAXECO_LEVEL" ;;
+"stop maxeco.service") rm -f "$MAXECO_STATE" "$MAXECO_LEVEL" ;;
+*) exit 5 ;;
+esac
+sleep 0.2

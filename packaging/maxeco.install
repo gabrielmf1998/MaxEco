@@ -1,0 +1,4 @@
+# Put the machine back to Normal before the files go away.
+pre_remove() {
+  systemctl stop maxeco.service >/dev/null 2>&1 || true
+}

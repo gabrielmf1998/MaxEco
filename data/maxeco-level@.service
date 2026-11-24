@@ -1,0 +1,16 @@
+# Started by the tray: maxeco-level@eco.service or maxeco-level@max.service.
+# maxeco.service comes first and saves the settings, so stopping it later
+# puts everything back.
+[Unit]
+Description=MaxEco level %i
+Requires=maxeco.service
+After=maxeco.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/maxeco/maxeco-helper level %i
+NoNewPrivileges=yes
+ProtectHome=yes
+ProtectSystem=full
+PrivateTmp=yes
+PrivateNetwork=yes

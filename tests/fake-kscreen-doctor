@@ -1,0 +1,32 @@
+#!/bin/sh
+# Stands in for kscreen-doctor in tests/t_tray.py. "-o" prints three screens
+# the way the real one does (colour codes included); anything else is logged
+# to $FAKE_KLOG and changes the current modes kept in $FAKE_SCREENS.
+# FAKE_KRC makes a change fail.
+S=${FAKE_SCREENS:?}
+[ -f "$S" ] || printf 'HDMI-A-2 2\nDP-4 26\nHDMI-A-1 40\n' > "$S"
+cur() { awk -v n="$1" '$1 == n { print $2 }' "$S"; }
+modes() { # output, then id:mode pairs
+  out=$1; c=$(cur "$out"); shift
+  printf '\t\033[01;34mModes: \033[0;0m'
+  for m; do
+    id=${m%%:*}
+    if [ "$id" = "$c" ]; then printf ' %s:\033[01;32m%s*\033[0;0m ' "$id" "${m#*:}"; else printf ' %s:%s ' "$id" "${m#*:}"; fi
+  done
+  printf '\n\033[01;33m\tCustom modes:\033[0;0m None\n\033[01;33m\tGeometry: \033[0;0m0,0 1920x1080\n'
+}
+if [ "$1" = "-o" ]; then
+  printf '\033[01;32mOutput: \033[0;0m1 HDMI-A-2 ceaf7a0a-8263\n\t\033[01;32menabled\033[0;0m\n\t\033[01;32mconnected\033[0;0m\n\t\033[01;33mHDMI\033[0;0m\n'
+  modes HDMI-A-2 '1:1920x1080@60.00!' 2:1920x1080@100.00 3:1920x1080@75.00 4:1920x1080@59.94 10:1280x720@60.00
+  printf '\033[01;32mOutput: \033[0;0m2 DP-4 1bfac3b3-c133\n\t\033[01;32menabled\033[0;0m\n\t\033[01;32mconnected\033[0;0m\n'
+  modes DP-4 '26:1920x1080@240.00!' 27:1920x1080@143.98 30:1920x1080@59.94 29:1920x1080@60.00 32:1280x1024@239.92 37:1280x720@59.94
+  printf '\033[01;32mOutput: \033[0;0m3 HDMI-A-1 99999999-0000\n\t\033[01;31mdisabled\033[0;0m\n\t\033[01;32mconnected\033[0;0m\n'
+  modes HDMI-A-1 40:1920x1080@144.00 41:1920x1080@60.00
+  exit 0
+fi
+echo "$*" >> "${FAKE_KLOG:?}"
+[ "${FAKE_KRC:-0}" = 0 ] || exit "$FAKE_KRC"
+for a; do # output.NAME.mode.ID
+  n=${a#output.}; n=${n%%.mode.*}; id=${a##*.mode.}
+  awk -v n="$n" -v id="$id" '$1 == n { $2 = id } { print }' "$S" > "$S.new" && mv "$S.new" "$S"
+done
